@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heaven Explorer — Adventure Awaits</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#83bf2c;
+  --gold-light:#e2c97e;
+  --gold-dark:#9e7e2e;
+  --green:#2d5a27;
+  --green-light:#3d7a35;
+  --green-dark:#1a3a16;
+  --night:#0a0d08;
+  --dark:#0f140d;
+  --mid:#141a12;
+  --card:#181e15;
+  --muted:#222a1e;
+  --border:rgba(200,169,81,0.22);
+  --border-green:rgba(45,90,39,0.4);
+  --text:#f0ece0;
+  --text-muted:#8a9080;
+  --white:#ffffff;
+}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+.cursor{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.2rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+nav.scrolled{background:rgba(10,13,8,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.8rem 3rem}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo img{height:38px;width:auto;object-fit:contain}
+.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.06em;color:var(--white)}
+.nav-logo-text span{color:var(--gold)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{color:var(--text-muted);text-decoration:none;font-size:.82rem;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;transition:color .2s;font-family:'Barlow Condensed',sans-serif}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{background:var(--gold);color:#0a0d08;padding:.55rem 1.4rem;border-radius:2px;font-size:.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;font-family:'Barlow Condensed',sans-serif}
+.nav-cta:hover{background:var(--gold-light);transform:translateY(-1px)}
+
+/* HERO */
+.hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;overflow:hidden}
+.hero-video-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35}
+.hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,13,8,.92) 0%,rgba(10,13,8,.7) 50%,rgba(10,13,8,.85) 100%)}
+.hero-content{position:relative;z-index:10;padding:0 3rem;max-width:900px}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(200,169,81,0.1);border:1px solid var(--border);padding:.35rem .9rem;border-radius:2px;font-size:.78rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-family:'Barlow Condensed',sans-serif;margin-bottom:1.5rem}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8.5rem);line-height:.9;letter-spacing:0.02em;color:var(--white);margin-bottom:1.5rem}
+.hero-title .line2{color:var(--gold);display:block}
+.hero-title .thin{font-family:'Barlow',sans-serif;font-weight:200;font-style:italic;font-size:clamp(1.6rem,3.5vw,2.8rem);color:var(--text-muted);letter-spacing:0.04em;display:block;margin-bottom:.3rem}
+.hero-sub{font-size:1.3rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em;color:var(--gold-light);margin-bottom:.8rem;font-style:italic}
+.hero-desc{font-size:1rem;line-height:1.7;color:var(--text-muted);max-width:480px;margin-bottom:2.5rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.btn-gold{background:var(--gold);color:#0a0d08;padding:.85rem 2.2rem;border-radius:2px;font-weight:700;font-size:.85rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;font-family:'Barlow Condensed',sans-serif;display:inline-flex;align-items:center;gap:.6rem}
+.btn-gold:hover{background:var(--gold-light);transform:translateY(-2px)}
+.btn-ghost{border:1px solid rgba(240,236,224,.2);color:var(--text);padding:.85rem 2.2rem;border-radius:2px;font-weight:500;font-size:.85rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;font-family:'Barlow Condensed',sans-serif}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.hero-socials{display:flex;gap:.8rem;margin-top:1.5rem;align-items:center}
+.hero-social-label{font-size:.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif}
+.hero-social-btn{width:38px;height:38px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.hero-social-btn:hover{border-color:var(--gold);background:rgba(200,169,81,.1)}
+.hero-social-btn img{width:20px;height:20px;object-fit:contain}
+.hero-stats{position:absolute;bottom:3rem;right:3rem;display:flex;gap:2.5rem;z-index:10}
+.stat{text-align:right}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;color:var(--gold)}
+.stat-label{font-size:.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif}
+.hero-scroll{position:absolute;bottom:2.5rem;left:3rem;display:flex;align-items:center;gap:.8rem;z-index:10}
+.scroll-line{width:40px;height:1px;background:var(--gold);animation:scrollLine 2s infinite}
+@keyframes scrollLine{0%{width:40px;opacity:1}50%{width:12px;opacity:.3}100%{width:40px;opacity:1}}
+.scroll-text{font-size:.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif}
+
+/* MOUNTAIN SVG SCENE */
+.mountain-scene{position:absolute;bottom:0;left:0;right:0;height:70%;pointer-events:none}
+
+/* ABOUT STRIP */
+.about-strip{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.8rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.strip-item{display:flex;align-items:center;gap:.9rem}
+.strip-icon{width:40px;height:40px;background:rgba(200,169,81,0.08);border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.strip-text{font-size:.83rem;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.04em}
+.strip-text strong{display:block;font-size:.95rem;color:var(--text);font-weight:600}
+.strip-div{width:1px;height:36px;background:var(--border)}
+
+/* SECTION BASE */
+section{position:relative}
+.section-label{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;display:flex;align-items:center;gap:.6rem}
+.section-label::before{content:'';width:22px;height:1px;background:var(--gold)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5vw,3.8rem);line-height:1;color:var(--white);margin-bottom:1rem}
+.section-title span{color:var(--gold)}
+.section-sub{font-size:.98rem;color:var(--text-muted);line-height:1.72;font-weight:300;max-width:520px}
+
+/* DESTINATIONS */
+.destinations{padding:6rem 3rem;background:var(--night)}
+.destinations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;margin-top:4rem;background:rgba(200,169,81,.08)}
+.destinations-grid-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:rgba(200,169,81,.08);margin-top:1.5px}
+.dest-card{position:relative;overflow:hidden;cursor:pointer;background:var(--card)}
+.dest-card.tall{aspect-ratio:3/4}
+.dest-card.med{aspect-ratio:4/3}
+.dest-card.wide{aspect-ratio:16/7}
+.dest-img{width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.25,.46,.45,.94),filter .4s;filter:saturate(.75) brightness(.85)}
+.dest-card:hover .dest-img{transform:scale(1.07);filter:saturate(1) brightness(.95)}
+.dest-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,8,4,.92) 0%,rgba(5,8,4,.35) 55%,transparent 100%)}
+.dest-badge{position:absolute;top:1rem;right:1rem;background:var(--gold);color:#0a0d08;padding:.22rem .65rem;border-radius:2px;font-size:.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif}
+.dest-info{position:absolute;bottom:0;left:0;right:0;padding:1.4rem}
+.dest-location{font-size:.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-light);font-family:'Barlow Condensed',sans-serif;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem;opacity:.85}
+.dest-name{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;color:#fff;line-height:1;margin-bottom:.35rem}
+.dest-desc{font-size:.8rem;color:rgba(240,236,224,.58);line-height:1.5;font-weight:300;display:none}
+.dest-card:hover .dest-desc{display:block}
+.dest-duration{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:rgba(240,236,224,.45);font-family:'Barlow Condensed',sans-serif;margin-top:.4rem}
+.dest-arrow{position:absolute;bottom:1.4rem;right:1.4rem;width:34px;height:34px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;transform:scale(0);transition:transform .3s}
+.dest-card:hover .dest-arrow{transform:scale(1)}
+.dest-link{display:inline-block;margin-top:.6rem;font-size:.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Barlow Condensed',sans-serif;text-decoration:none;border-bottom:1px solid rgba(200,169,81,.3);padding-bottom:1px}
+
+/* ADVENTURE */
+.adventure{padding:6rem 3rem;background:var(--dark)}
+.adv-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:4rem;gap:2rem;flex-wrap:wrap}
+.adv-tabs{display:flex;flex-wrap:wrap;margin-top:1.5rem}
+.adv-tab{padding:.55rem 1.4rem;border:1px solid var(--border);font-size:.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:transparent;cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;border-right:none}
+.adv-tab:last-child{border-right:1px solid var(--border)}
+.adv-tab.active,.adv-tab:hover{background:var(--gold);border-color:var(--gold);color:#0a0d08}
+.adv-showcase{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+.adv-svg-box{background:var(--card);border:1px solid var(--border);padding:2.5rem;display:flex;align-items:center;justify-content:center;min-height:380px;position:relative;overflow:hidden}
+.adv-svg-box::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 28px,rgba(200,169,81,.018) 28px,rgba(200,169,81,.018) 29px)}
+.adv-details{display:flex;flex-direction:column;gap:1rem}
+.adv-detail-card{background:var(--card);border:1px solid var(--border);padding:1.4rem;transition:border-color .2s,transform .2s;cursor:pointer}
+.adv-detail-card:hover,.adv-detail-card.active{border-color:var(--gold);transform:translateX(4px)}
+.adv-detail-icon{width:38px;height:38px;background:rgba(200,169,81,0.09);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem}
+.adv-detail-title{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:0.04em;margin-bottom:.25rem;color:var(--text)}
+.adv-detail-desc{font-size:.82rem;color:var(--text-muted);line-height:1.6;font-weight:300}
+
+/* EXPERIENCE */
+.experience{padding:6rem 3rem;background:var(--night);position:relative;overflow:hidden}
+.experience::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 58px,rgba(200,169,81,.012) 58px,rgba(200,169,81,.012) 59px),repeating-linear-gradient(180deg,transparent,transparent 58px,rgba(200,169,81,.012) 58px,rgba(200,169,81,.012) 59px)}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;margin-top:3rem}
+.exp-visual{position:relative}
+.exp-main-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;filter:saturate(.8) brightness(.85)}
+.exp-accent-card{position:absolute;bottom:-1.5rem;right:-1.5rem;background:var(--gold);padding:1.4rem 1.8rem;width:190px}
+.exp-accent-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#0a0d08;line-height:1}
+.exp-accent-label{font-size:.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(10,13,8,.65);font-family:'Barlow Condensed',sans-serif}
+.exp-features{display:flex;flex-direction:column;gap:1.3rem;margin-top:2rem}
+.exp-feature{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem;border:1px solid transparent;transition:border-color .2s,background .2s}
+.exp-feature:hover{border-color:var(--border);background:rgba(200,169,81,.03)}
+.exp-feat-icon{width:42px;height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:rgba(200,169,81,.05)}
+.exp-feat-body h4{font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:700;letter-spacing:0.04em;margin-bottom:.25rem;color:var(--text)}
+.exp-feat-body p{font-size:.82rem;color:var(--text-muted);line-height:1.6;font-weight:300}
+
+/* GALLERY */
+.gallery{padding:6rem 3rem;background:var(--mid)}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:175px;gap:1.5px;margin-top:3rem;background:rgba(200,169,81,.07)}
+.gallery-item{position:relative;overflow:hidden;background:var(--card)}
+.gallery-item:nth-child(1){grid-column:span 2;grid-row:span 2}
+.gallery-item:nth-child(5){grid-column:span 2}
+.g-img{width:100%;height:100%;object-fit:cover;transition:transform .6s,filter .4s;filter:saturate(.7) brightness(.85)}
+.gallery-item:hover .g-img{transform:scale(1.07);filter:saturate(1) brightness(.95)}
+.g-overlay{position:absolute;inset:0;background:rgba(10,13,8,.45);opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+.gallery-item:hover .g-overlay{opacity:1}
+.g-label{position:absolute;bottom:0;left:0;right:0;padding:.6rem .8rem;background:linear-gradient(transparent,rgba(5,8,4,.8));font-size:.72rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:rgba(200,169,81,.8);opacity:0;transition:opacity .3s}
+.gallery-item:hover .g-label{opacity:1}
+
+/* TESTIMONIALS */
+.testimonials{padding:6rem 3rem;background:var(--dark)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem;margin-top:4rem}
+.test-card{background:var(--card);border:1px solid var(--border);padding:2rem;position:relative;transition:border-color .3s,transform .3s}
+.test-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+.test-card::before{content:'"';font-family:'Bebas Neue',sans-serif;font-size:6rem;color:var(--gold);opacity:.12;position:absolute;top:-1rem;left:1rem;line-height:1}
+.test-stars{color:var(--gold);font-size:.85rem;margin-bottom:.6rem}
+.test-text{font-size:.88rem;color:var(--text-muted);line-height:1.8;font-style:italic;font-weight:300;margin-bottom:1.4rem;position:relative;z-index:1}
+.test-author{display:flex;align-items:center;gap:.8rem}
+.test-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.test-avatar-fallback{width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#0a0d08;flex-shrink:0;border:2px solid var(--border)}
+.test-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.05em;font-size:.92rem}
+.test-place{font-size:.76rem;color:var(--text-muted)}
+
+/* VIDEOS */
+.videos{padding:6rem 3rem;background:var(--night)}
+.video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:4rem}
+.vid-embed-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--card);border:1px solid var(--border)}
+.vid-embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.vid-thumb-click{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--card);cursor:pointer;border:1px solid var(--border)}
+.vid-thumb-click img{width:100%;height:100%;object-fit:cover;transition:transform .4s,filter .4s;filter:saturate(.65) brightness(.8)}
+.vid-thumb-click:hover img{transform:scale(1.05);filter:saturate(1) brightness(.9)}
+.vid-play-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,8,4,.35);transition:background .3s;gap:.8rem}
+.vid-thumb-click:hover .vid-play-overlay{background:rgba(5,8,4,.15)}
+.vid-play-btn{width:60px;height:60px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s}
+.vid-thumb-click:hover .vid-play-btn{transform:scale(1.1)}
+.vid-title{font-size:.8rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em;color:rgba(240,236,224,.8);text-align:center;padding:0 1rem}
+.vid-bottom-bar{position:absolute;bottom:0;left:0;right:0;padding:.6rem .8rem;background:linear-gradient(transparent,rgba(5,8,4,.75));font-size:.75rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.04em;color:rgba(200,169,81,.85)}
+
+/* VIDEO MODAL */
+.vid-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center}
+.vid-modal.open{display:flex}
+.vid-modal-inner{position:relative;width:min(860px,95vw);aspect-ratio:16/9}
+.vid-modal-inner iframe{width:100%;height:100%;border:none}
+.vid-modal-close{position:absolute;top:-2.5rem;right:0;background:transparent;border:none;color:#fff;font-size:1.8rem;cursor:pointer;line-height:1;font-family:sans-serif;opacity:.7;transition:opacity .2s}
+.vid-modal-close:hover{opacity:1}
+
+/* PARTNERS */
+.partners{padding:2.5rem 3rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--dark);display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.partners-label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted)}
+.partners-logos{display:flex;gap:2rem;align-items:center;flex-wrap:wrap}
+.partner-img{height:36px;width:auto;object-fit:contain;opacity:.5;filter:grayscale(1) brightness(1.5);transition:opacity .2s,filter .2s}
+.partner-img:hover{opacity:.9;filter:grayscale(0) brightness(1)}
+
+/* CTA BANNER */
+.cta-banner{padding:5rem 3rem;background:var(--green);position:relative;overflow:hidden;text-align:center}
+.cta-banner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 18px,rgba(0,0,0,.05) 18px,rgba(0,0,0,.05) 19px)}
+.cta-banner h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);color:var(--gold);line-height:1;position:relative;z-index:1;margin-bottom:.8rem}
+.cta-banner p{color:rgba(240,236,224,.7);font-size:1rem;position:relative;z-index:1;margin-bottom:2rem;font-weight:300}
+.btn-gold-outline{border:2px solid var(--gold);color:var(--gold);padding:.85rem 2.5rem;border-radius:2px;font-weight:700;font-size:.85rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;font-family:'Barlow Condensed',sans-serif;display:inline-block;transition:all .2s}
+.btn-gold-outline:hover{background:var(--gold);color:#0a0d08;transform:translateY(-2px)}
+
+/* CONTACT */
+.contact{padding:6rem 3rem;background:var(--night)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;margin-top:4rem;align-items:start}
+.contact-info{display:flex;flex-direction:column;gap:1.3rem}
+.contact-item{display:flex;align-items:flex-start;gap:.9rem;padding:1.1rem;border:1px solid var(--border);transition:border-color .2s}
+.contact-item:hover{border-color:var(--gold)}
+.contact-ico{width:38px;height:38px;background:rgba(200,169,81,0.08);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.contact-detail h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.04em;margin-bottom:.2rem;font-size:.95rem}
+.contact-detail p,.contact-detail a{font-size:.83rem;color:var(--text-muted);text-decoration:none;line-height:1.6}
+.contact-detail a:hover{color:var(--gold)}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-field input,.form-field textarea,.form-field select{width:100%;background:var(--card);border:1px solid var(--border);padding:.85rem 1rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;border-radius:0;-webkit-appearance:none}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--gold)}
+.form-field textarea{resize:vertical;min-height:115px}
+.form-field select option{background:#181e15;color:var(--text)}
+::placeholder{color:var(--text-muted)}
+.form-links{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.3rem}
+.form-links a{font-size:.75rem;color:var(--text-muted);text-decoration:none;letter-spacing:0.05em;font-family:'Barlow Condensed',sans-serif;transition:color .2s}
+.form-links a:hover{color:var(--gold)}
+
+/* FOOTER */
+footer{background:var(--dark);border-top:1px solid var(--border);padding:2.5rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.foot-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.foot-logo img{height:32px;width:auto}
+.foot-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.05em;color:var(--white)}
+.foot-logo-text span{color:var(--gold)}
+.foot-copy{font-size:.75rem;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.04em;text-align:center}
+.foot-copy a{color:var(--gold);text-decoration:none}
+.foot-socials{display:flex;gap:.7rem}
+.social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .2s}
+.social-btn img{width:18px;height:18px;object-fit:contain;opacity:.55;transition:opacity .2s}
+.social-btn:hover{border-color:var(--gold);background:rgba(200,169,81,.08)}
+.social-btn:hover img{opacity:1}
+
+/* SCROLL ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(28px);transition:opacity .65s,transform .65s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-left{opacity:0;transform:translateX(-28px);transition:opacity .65s,transform .65s}
+.fade-left.visible{opacity:1;transform:translateX(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  .hero-content,.hero-scroll{padding-left:1.5rem}.hero-scroll{left:1.5rem}
+  .hero-stats{right:1.5rem;gap:1.2rem}.stat-num{font-size:2rem}
+  .about-strip,.destinations,.adventure,.experience,.gallery,.testimonials,.videos,.contact,.partners{padding:4rem 1.5rem}
+  .adv-showcase,.exp-grid,.contact-grid{grid-template-columns:1fr}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-item:nth-child(1){grid-column:span 2}
+  .video-grid{grid-template-columns:1fr}
+  .destinations-grid,.destinations-grid-row2{grid-template-columns:1fr}
+  .dest-card.tall,.dest-card.med,.dest-card.wide{aspect-ratio:4/3}
+  .form-row{grid-template-columns:1fr}
+  .exp-accent-card{right:0;bottom:-1rem;width:160px}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- VIDEO MODAL -->
+<div class="vid-modal" id="vidModal">
+  <div class="vid-modal-inner">
+    <button class="vid-modal-close" onclick="closeModal()">&#x2715;</button>
+    <iframe id="modalFrame" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="https://heavenexplorer.in/siteimg/heaven.png" alt="Heaven Explorer Logo" onerror="this.style.display='none'">
+    <span class="nav-logo-text">Heaven<span>Explorer</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#destinations">Campsites</a></li>
+    <li><a href="#adventure">Adventure</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Photos</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Book Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <video class="hero-video-bg" autoplay muted loop playsinline>
+    <source src="https://heavenexplorer.in/sitevid/textvid.mp4" type="video/mp4">
+  </video>
+  <div class="hero-bg-overlay"></div>
+
+  <!-- Mountain SVG scene layered below content -->
+  <div class="mountain-scene">
+    <svg width="100%" height="100%" viewBox="0 0 1400 600" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Stars -->
+      <g fill="#fff" opacity=".5">
+        <circle cx="80" cy="40" r="1"/><circle cx="220" cy="18" r="1.5"/><circle cx="380" cy="55" r="1"/><circle cx="530" cy="12" r="1"/>
+        <circle cx="680" cy="42" r="1.5"/><circle cx="820" cy="8" r="1"/><circle cx="970" cy="38" r="1.5"/><circle cx="1120" cy="20" r="1"/>
+        <circle cx="1270" cy="50" r="1"/><circle cx="1380" cy="22" r="1.5"/>
+        <circle cx="150" cy="100" r="1"/><circle cx="310" cy="75" r="1.5"/><circle cx="460" cy="115" r="1"/>
+        <circle cx="700" cy="65" r="1"/><circle cx="880" cy="105" r="1.5"/><circle cx="1050" cy="80" r="1"/>
+        <circle cx="1200" cy="95" r="1.5"/>
+      </g>
+      <!-- Moon -->
+      <circle cx="1100" cy="75" r="48" fill="#141e10" opacity=".9"/>
+      <circle cx="1116" cy="63" r="42" fill="#0a0d08"/>
+      <!-- Far mountains -->
+      <path d="M0 440 L130 210 L270 340 L420 140 L570 300 L700 170 L840 280 L960 155 L1110 325 L1240 195 L1380 295 L1400 260 L1400 600 L0 600Z" fill="#0c120a" opacity=".7"/>
+      <!-- Snow -->
+      <path d="M420 140 L460 205 L380 205Z" fill="rgba(240,236,224,.13)"/>
+      <path d="M960 155 L1000 212 L920 212Z" fill="rgba(240,236,224,.12)"/>
+      <path d="M1240 195 L1272 238 L1208 238Z" fill="rgba(240,236,224,.1)"/>
+      <!-- Mid mountains -->
+      <path d="M0 510 L190 275 L370 420 L540 215 L720 375 L880 245 L1040 400 L1220 265 L1400 370 L1400 600 L0 600Z" fill="#0e1409" opacity=".92"/>
+      <path d="M540 215 L585 282 L495 282Z" fill="rgba(240,236,224,.17)"/>
+      <path d="M880 245 L920 305 L840 305Z" fill="rgba(240,236,224,.14)"/>
+      <!-- Trees -->
+      <g fill="#091007" opacity=".97">
+        <polygon points="40,510 58,472 76,510"/><polygon points="78,515 98,474 118,515"/>
+        <polygon points="128,510 149,468 170,510"/><polygon points="185,515 208,472 231,515"/>
+        <polygon points="300,510 323,466 346,510"/>
+        <polygon points="580,512 605,468 630,512"/><polygon points="640,510 667,464 694,510"/>
+        <polygon points="720,514 748,468 776,514"/><polygon points="810,510 840,462 870,510"/>
+        <polygon points="950,512 980,466 1010,512"/><polygon points="1020,510 1052,462 1084,510"/>
+        <polygon points="1150,512 1182,466 1214,512"/><polygon points="1220,510 1254,462 1288,510"/>
+        <polygon points="1340,512 1372,466 1404,512"/>
+      </g>
+      <!-- Road -->
+      <path d="M-20 575 Q400 552 700 562 Q1000 572 1420 550" stroke="#141a0e" stroke-width="28" fill="none"/>
+      <path d="M-20 575 Q400 552 700 562 Q1000 572 1420 550" stroke="#1a2214" stroke-width="22" fill="none"/>
+      <path d="M80 572 L180 568 M260 566 L360 562 M440 561 L540 559 M620 559 L720 559 M800 561 L900 563 M980 566 L1080 570 M1160 573 L1260 577" stroke="rgba(200,169,81,.22)" stroke-width="2" stroke-dasharray="50,38"/>
+      <!-- Motorcycle -->
+      <g transform="translate(660,538)">
+        <circle cx="-45" cy="18" r="22" fill="none" stroke="#252d20" stroke-width="5"/>
+        <circle cx="-45" cy="18" r="14" fill="none" stroke="#1c2418" stroke-width="3"/>
+        <circle cx="-45" cy="18" r="4" fill="#83bf2c"/>
+        <line x1="-45" y1="4" x2="-45" y2="32" stroke="#2a3222" stroke-width="1.5"/><line x1="-31" y1="8" x2="-59" y2="28" stroke="#2a3222" stroke-width="1.5"/><line x1="-59" y1="8" x2="-31" y2="28" stroke="#2a3222" stroke-width="1.5"/>
+        <circle cx="45" cy="18" r="22" fill="none" stroke="#252d20" stroke-width="5"/>
+        <circle cx="45" cy="18" r="14" fill="none" stroke="#1c2418" stroke-width="3"/>
+        <circle cx="45" cy="18" r="4" fill="#83bf2c"/>
+        <line x1="45" y1="4" x2="45" y2="32" stroke="#2a3222" stroke-width="1.5"/><line x1="31" y1="8" x2="59" y2="28" stroke="#2a3222" stroke-width="1.5"/><line x1="59" y1="8" x2="31" y2="28" stroke="#2a3222" stroke-width="1.5"/>
+        <line x1="-45" y1="18" x2="-5" y2="5" stroke="#191f14" stroke-width="4" stroke-linecap="round"/>
+        <path d="M-5,5 L-20,-10 L10,-20 L35,-18 L40,-5 L30,5 L5,10 Z" fill="#191f14" stroke="#252d20" stroke-width="1.5"/>
+        <path d="M-8,-10 L14,-22 L30,-20 L34,-10 L10,-6 Z" fill="#83bf2c"/>
+        <path d="M-3,-7 L20,-18 L28,-15 L-3,-7Z" fill="#e2c97e" opacity=".35"/>
+        <path d="M-20,-10 L-5,-15 L-3,-10 L-20,-6Z" fill="#0f140d"/>
+        <line x1="35" y1="-15" x2="45" y2="0" stroke="#252d20" stroke-width="4" stroke-linecap="round"/>
+        <path d="M32,-18 L38,-14 M38,-14 L44,-12 M38,-14 L42,-20" stroke="#252d20" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M-10,5 Q-25,15 -40,14" stroke="#2a3222" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="-50" cy="10" r="3" fill="rgba(200,200,180,.12)"/>
+        <circle cx="-62" cy="6" r="4" fill="rgba(200,200,180,.08)"/>
+        <path d="M-6,-18 Q4,-35 14,-30 Q18,-22 12,-18 L-6,-18Z" fill="#0a0d08"/>
+        <circle cx="14" cy="-32" r="6" fill="#0a0d08"/>
+        <ellipse cx="44" cy="-8" rx="5" ry="4" fill="#83bf2c" opacity=".7"/>
+        <rect x="-62" y="0" width="14" height="12" rx="1" fill="#191f14" stroke="#252d20" stroke-width="1"/>
+      </g>
+      <!-- Jeep right -->
+      <g transform="translate(1180,550)" opacity=".65">
+        <rect x="-50" y="-28" width="100" height="30" rx="2" fill="#191f14"/>
+        <rect x="-42" y="-44" width="66" height="18" rx="3" fill="#141a10"/>
+        <rect x="-35" y="-40" width="24" height="12" rx="1" fill="#0d1209" opacity=".8"/>
+        <rect x="8" y="-40" width="22" height="12" rx="1" fill="#0d1209" opacity=".8"/>
+        <rect x="-50" y="-6" width="100" height="10" fill="#0f140d"/>
+        <circle cx="-32" cy="6" r="14" fill="#0a0a08" stroke="#252d20" stroke-width="3"/>
+        <circle cx="-32" cy="6" r="7" fill="#191f14"/>
+        <circle cx="32" cy="6" r="14" fill="#0a0a08" stroke="#252d20" stroke-width="3"/>
+        <circle cx="32" cy="6" r="7" fill="#191f14"/>
+        <rect x="-18" y="-44" width="36" height="4" rx="1" fill="#83bf2c" opacity=".28"/>
+        <circle cx="-44" cy="-15" r="3" fill="#83bf2c" opacity=".7"/>
+        <circle cx="44" cy="-15" r="3" fill="rgba(255,255,200,.55)"/>
+      </g>
+      <!-- Ground fog -->
+      <ellipse cx="700" cy="598" rx="950" ry="22" fill="#0a0d08" opacity=".55"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-tag">Tamil Nadu's #1 Adventure Travel</div>
+    <h1 class="hero-title">
+      <span class="thin">Where the road</span>
+      HEAVEN
+      <span class="line2">EXPLORER</span>
+    </h1>
+    <p class="hero-sub">Let the view Lift your souls</p>
+    <p class="hero-desc">Camping, trekking, and off-road adventures across the Western Ghats. Real terrain. Real people. Unforgettable stories.</p>
+    <div class="hero-btns">
+      <a href="#destinations" class="btn-gold">
+        Explore Campsites
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://www.youtube.com/heavenexplorer?sub_confirmation=1" class="btn-ghost" target="_blank">Watch on YouTube</a>
+    </div>
+    <div class="hero-socials">
+      <span class="hero-social-label">Follow us</span>
+      <a class="hero-social-btn" href="https://www.instagram.com/heavenexplorer/" target="_blank">
+        <img src="https://heavenexplorer.in/siteimg/instagramcolor.png" alt="Instagram">
+      </a>
+      <a class="hero-social-btn" href="https://www.youtube.com/heavenexplorer?sub_confirmation=1" target="_blank">
+        <img src="https://heavenexplorer.in/siteimg/youtubecolor.png" alt="YouTube">
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">381K</div>
+      <div class="stat-label">YouTube Subs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">181K</div>
+      <div class="stat-label">Instagram Followers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Years of Adventure</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<div class="about-strip">
+  <div class="strip-item">
+    <div class="strip-icon"><svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+    <div class="strip-text"><strong>TN & Kerala</strong>Multiple stunning locations</div>
+  </div>
+  <div class="strip-div"></div>
+  <div class="strip-item">
+    <div class="strip-icon"><svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div class="strip-text"><strong>Camping & Trekking</strong>Since 2018 — adventure experts</div>
+  </div>
+  <div class="strip-div"></div>
+  <div class="strip-item">
+    <div class="strip-icon"><svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="strip-text"><strong>2 Days / 1 Night</strong>Curated trip packages</div>
+  </div>
+  <div class="strip-div"></div>
+  <div class="strip-item">
+    <div class="strip-icon"><svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <div class="strip-text"><strong>Safe & Guided</strong>Expert trek leaders always</div>
+  </div>
+  <div class="strip-div"></div>
+  <div class="strip-item">
+    <div class="strip-icon"><svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+    <div class="strip-text"><strong>Community</strong>321K+ adventure family</div>
+  </div>
+</div>
+
+<!-- DESTINATIONS -->
+<section class="destinations" id="destinations">
+  <div class="section-label">Campsites</div>
+  <h2 class="section-title fade-up">DISCOVER YOUR NEXT <span>BASECAMP</span></h2>
+  <p class="section-sub fade-up">Hand-picked sites across the Western Ghats — each one more spectacular than the last.</p>
+
+  <div class="destinations-grid fade-up" style="margin-top:3.5rem">
+    <!-- Poombarai -->
+    <div class="dest-card tall">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/poombarai/camp1.jpeg" alt="Poombarai Campsite">
+      <div class="dest-overlay"></div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Kodaikanal, Tamil Nadu
+        </div>
+        <div class="dest-name">Poombarai</div>
+        <div class="dest-desc">A serene village nestled in Kodaikanal's scenic hills. Lush green valleys, cascading waterfalls, breathtaking viewpoints.</div>
+        <div class="dest-duration">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          2 Days / 1 Night
+        </div>
+        <a href="https://heavenexplorer.in/poombarai.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+    <!-- Yelagiri -->
+    <div class="dest-card tall">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/yelagiri/camp1.jpeg" alt="Yelagiri Campsite">
+      <div class="dest-overlay"></div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Tirupattur, Tamil Nadu
+        </div>
+        <div class="dest-name">Yelagiri</div>
+        <div class="dest-desc">Hidden hill paradise in the Eastern Ghats. A serene escape from city life with stunning natural surroundings.</div>
+        <div class="dest-duration">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          2 Days / 1 Night
+        </div>
+        <a href="https://heavenexplorer.in/yelagiri.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+    <!-- Kanthaloor -->
+    <div class="dest-card tall">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/kanthaloor/camp3.jpeg" alt="Kanthaloor Campsite">
+      <div class="dest-overlay"></div>
+      <div class="dest-badge">Kerala</div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Idukki, Kerala
+        </div>
+        <div class="dest-name">Kanthaloor</div>
+        <div class="dest-desc">The Apple Village of Kerala. Stunning Western Ghats scenery with idyllic landscapes and off-road trails.</div>
+        <div class="dest-duration">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          2 Days / 1 Night
+        </div>
+        <a href="https://heavenexplorer.in/kanthaloor.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="destinations-grid-row2 fade-up" style="transition-delay:.12s">
+    <!-- Vagamon -->
+    <div class="dest-card med">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/vagamon/camp1.png" alt="Vagamon Campsite">
+      <div class="dest-overlay"></div>
+      <div class="dest-badge">NatGeo Pick</div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Kottayam, Kerala
+        </div>
+        <div class="dest-name">Vagamon</div>
+        <div class="dest-desc">NatGeo's top 50 India. Pine forests, meadows, cascading waterfalls.</div>
+        <div class="dest-duration">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          2 Days / 1 Night
+        </div>
+        <a href="https://heavenexplorer.in/vagamon.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <!-- Adventure Combo Uthandi -->
+    <div class="dest-card med">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/adventurecombo.png" alt="Adventure Combo Uthandi" style="object-position:center top">
+      <div class="dest-overlay"></div>
+      <div class="dest-badge">Adventure Games</div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          ECR, Uthandi, Chennai
+        </div>
+        <div class="dest-name">Adventure Combo @ Uthandi</div>
+        <div class="dest-desc">Action-packed adventure combo — rope courses, zip lines, and more.</div>
+        <a href="https://heavenexplorer.in/adventurecombo.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <!-- Adventure Combo Koovathur -->
+    <div class="dest-card med">
+      <img class="dest-img" src="https://heavenexplorer.in/siteimg/adventurecombo.png" alt="Adventure Combo Koovathur" style="object-position:center bottom">
+      <div class="dest-overlay"></div>
+      <div class="dest-badge">Adventure Games</div>
+      <div class="dest-info">
+        <div class="dest-location">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          ECR, Koovathur, Chennai
+        </div>
+        <div class="dest-name">Adventure Combo @ Koovathur</div>
+        <div class="dest-desc">Thrilling outdoor activities in a scenic coastal adventure setting.</div>
+        <a href="https://heavenexplorer.in/adventurecombo1.html" class="dest-link" target="_blank">View Details</a>
+      </div>
+      <div class="dest-arrow"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#0a0d08" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ADVENTURE MODES -->
+<section class="adventure" id="adventure">
+  <div class="adv-header">
+    <div>
+      <div class="section-label">Adventure Modes</div>
+      <h2 class="section-title fade-up">PICK YOUR <span>WEAPON</span></h2>
+    </div>
+    <div class="adv-tabs">
+      <button class="adv-tab active" onclick="switchAdv(this,'bike')">Bike Rides</button>
+      <button class="adv-tab" onclick="switchAdv(this,'trek')">Trekking</button>
+      <button class="adv-tab" onclick="switchAdv(this,'camp')">Camping</button>
+      <button class="adv-tab" onclick="switchAdv(this,'offroad')">Off-Road</button>
+    </div>
+  </div>
+  <div class="adv-showcase">
+    <div class="adv-svg-box" id="advSvgBox">
+      <svg width="310" height="270" viewBox="0 0 310 270" xmlns="http://www.w3.org/2000/svg" id="advSvg">
+        <path d="M0 195 L50 118 L100 165 L155 78 L210 148 L268 100 L310 128 L310 270 L0 270Z" fill="rgba(200,169,81,.04)"/>
+        <path d="M155 78 L190 128 L120 128Z" fill="rgba(200,169,81,.09)"/>
+        <path d="M0 235 Q155 220 310 230" stroke="#191f14" stroke-width="18" fill="none"/>
+        <path d="M0 235 Q155 220 310 230" stroke="#1c2418" stroke-width="14" fill="none"/>
+        <path d="M35 233 L80 230 M120 228 L165 226 M205 226 L250 228" stroke="rgba(200,169,81,.22)" stroke-width="2" stroke-dasharray="28,18"/>
+        <g transform="translate(155,212)">
+          <circle cx="-56" cy="14" r="25" fill="none" stroke="#252d20" stroke-width="6"/>
+          <circle cx="-56" cy="14" r="16" fill="none" stroke="#1c2418" stroke-width="3"/>
+          <circle cx="-56" cy="14" r="5" fill="#83bf2c"/>
+          <line x1="-56" y1="-2" x2="-56" y2="30" stroke="#2a3222" stroke-width="1.5"/><line x1="-42" y1="4" x2="-70" y2="24" stroke="#2a3222" stroke-width="1.5"/><line x1="-70" y1="4" x2="-42" y2="24" stroke="#2a3222" stroke-width="1.5"/>
+          <circle cx="56" cy="14" r="25" fill="none" stroke="#252d20" stroke-width="6"/>
+          <circle cx="56" cy="14" r="16" fill="none" stroke="#1c2418" stroke-width="3"/>
+          <circle cx="56" cy="14" r="5" fill="#83bf2c"/>
+          <line x1="56" y1="-2" x2="56" y2="30" stroke="#2a3222" stroke-width="1.5"/><line x1="42" y1="4" x2="70" y2="24" stroke="#2a3222" stroke-width="1.5"/><line x1="70" y1="4" x2="42" y2="24" stroke="#2a3222" stroke-width="1.5"/>
+          <path d="M-8,6 L-22,-8 L10,-22 L40,-18 L46,-5 L34,6Z" fill="#191f14" stroke="#252d20" stroke-width="1.5"/>
+          <path d="M-10,-10 L12,-24 L30,-22 L36,-10 L10,-7Z" fill="#83bf2c"/>
+          <circle cx="16" cy="-36" r="8" fill="#0a0d08"/>
+          <path d="M-5,-20 Q6,-38 16,-34 Q22,-26 16,-20 L-5,-20Z" fill="#0a0d08"/>
+          <ellipse cx="50" cy="-6" rx="5" ry="4" fill="#83bf2c" opacity=".75"/>
+          <rect x="-74" y="-2" width="15" height="13" rx="1" fill="#191f14" stroke="#252d20" stroke-width="1"/>
+          <path d="M-10,5 Q-22,15 -46,14" stroke="#2a3222" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+        <text x="155" y="262" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,169,81,.45)" letter-spacing="3" font-weight="600">ADVENTURE TOURING</text>
+      </svg>
+    </div>
+    <div class="adv-details" id="advDetails">
+      <div class="adv-detail-card active">
+        <div class="adv-detail-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+        <div class="adv-detail-title">Mountain Bike Trails</div>
+        <div class="adv-detail-desc">Tackle the winding ghats roads with expert guidance. Routes through Kodaikanal, Munnar passes, and valley descents.</div>
+      </div>
+      <div class="adv-detail-card">
+        <div class="adv-detail-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M3 17l4-8 4 4 4-6 4 10"/></svg></div>
+        <div class="adv-detail-title">Sunrise Rides</div>
+        <div class="adv-detail-desc">Pre-dawn starts to catch golden hour on mountain peaks. Unforgettable vistas as the mist lifts from the valleys.</div>
+      </div>
+      <div class="adv-detail-card">
+        <div class="adv-detail-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="adv-detail-title">Group Ride Events</div>
+        <div class="adv-detail-desc">Monthly community rides with 50–200 riders. Safety briefings, support vehicles, and camp at the destination.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT / EXPERIENCE -->
+<section class="experience" id="about">
+  <div class="exp-grid">
+    <div class="exp-visual fade-left">
+      <img class="exp-main-img" src="https://heavenexplorer.in/siteimg/kodanad/camp1.jpg" alt="Heaven Explorer Kodanad Campsite">
+      <div class="exp-accent-card">
+        <div class="exp-accent-num">2018</div>
+        <div class="exp-accent-label">Pioneering adventure travel</div>
+      </div>
+    </div>
+    <div style="padding-top:1rem">
+      <div class="section-label">About Us</div>
+      <h2 class="section-title fade-up">MORE THAN JUST<br>A <span>TRIP</span></h2>
+      <p class="section-sub fade-up">Introducing Heaven Explorer, a renowned travel YouTube channel with 381K subscribers and 181K Instagram followers. Since 2018, we've been capturing exhilarating treks and camping adventures — from base camping in the Himalayas to water rafting in Dandeli, paragliding, surfing, and awe-inspiring treks in the Western Ghats.</p>
+      <div class="exp-features">
+        <div class="exp-feature fade-up">
+          <div class="exp-feat-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+          <div class="exp-feat-body"><h4>Fully Organized Packages</h4><p>Transport, camping gear, meals, and expert guides — every detail handled so you focus on the adventure.</p></div>
+        </div>
+        <div class="exp-feature fade-up" style="transition-delay:.1s">
+          <div class="exp-feat-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="exp-feat-body"><h4>Safety First, Always</h4><p>Certified trek leaders, first-aid kits, emergency protocols, and regular check-ins throughout every trip.</p></div>
+        </div>
+        <div class="exp-feature fade-up" style="transition-delay:.2s">
+          <div class="exp-feat-icon"><svg width="21" height="21" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87V15.13a1 1 0 01-1.447.9L15 14M5 18H3a2 2 0 01-2-2V8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5z"/></svg></div>
+          <div class="exp-feat-body"><h4>Content & Community</h4><p>Cinematic locations perfect for creating content, and a vibrant community of 321K+ adventure lovers.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY / PHOTOS -->
+<section class="gallery" id="gallery">
+  <div class="section-label">Visual Stories</div>
+  <h2 class="section-title fade-up">MOMENTS FROM <span>THE TRAIL</span></h2>
+  <div class="gallery-grid fade-up" style="transition-delay:.12s">
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/kodanad/camp2.jpg" alt="Kodanad Camp">
+      <div class="g-overlay"><svg width="34" height="34" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Kodanad</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/kodanad/camp3.jpg" alt="Kodanad Camp 3">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Kodanad</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/yelagiri/camp1.jpeg" alt="Yelagiri Camp">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Yelagiri</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/yelagiri/camp5.jpeg" alt="Yelagiri Camp 5">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Yelagiri</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/vellagavi/camp3.jpg" alt="Vellagavi Camp 3">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Vellagavi</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/pandrimalai/camp1.jpg" alt="Pandrimalai Camp">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Pandrimalai</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/kanthaloor/camp2.jpeg" alt="Kanthaloor Camp 2">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Kanthaloor</div>
+    </div>
+    <div class="gallery-item">
+      <img class="g-img" src="https://heavenexplorer.in/siteimg/vellagavi/camp1.jpg" alt="Vellagavi Camp 1">
+      <div class="g-overlay"><svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/></svg></div>
+      <div class="g-label">Vellagavi</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-label">Reviews</div>
+  <h2 class="section-title fade-up">VOICES FROM <span>THE TRAIL</span></h2>
+  <div class="test-grid">
+    <div class="test-card fade-up">
+      <div class="test-stars">★★★★★</div>
+      <p class="test-text">Camping with Heaven Explorer was an unforgettable experience! From the moment we arrived at the campsite, we were surrounded by breathtaking natural beauty. The campfire under the starry sky, the delicious food cooked over an open flame, and the sense of camaraderie made it truly magical.</p>
+      <div class="test-author">
+        <img class="test-avatar" src="https://heavenexplorer.in/siteimg/defaultprofpic.png" alt="Shylaja">
+        <div><div class="test-name">Shylaja</div><div class="test-place">Salem, Tamil Nadu</div></div>
+      </div>
+    </div>
+    <div class="test-card fade-up" style="transition-delay:.1s">
+      <div class="test-stars">★★★★★</div>
+      <p class="test-text">I had never been camping before, but Heaven Explorer made it an absolute delight. The knowledgeable guides took us to the most stunning locations and taught us valuable skills. I returned home feeling rejuvenated and with a newfound love for nature.</p>
+      <div class="test-author">
+        <img class="test-avatar" src="https://heavenexplorer.in/siteimg/defaultprofpic.png" alt="Nanda Kumar">
+        <div><div class="test-name">Nanda Kumar</div><div class="test-place">Tirupur, Tamil Nadu</div></div>
+      </div>
+    </div>
+    <div class="test-card fade-up" style="transition-delay:.2s">
+      <div class="test-stars">★★★★★</div>
+      <p class="test-text">As an outdoor enthusiast who has been on several camping trips, this one exceeded all expectations. The attention to detail, expert guidance, and seamless logistics made it stress-free. Their passion for the outdoors is contagious. An adventure I'll cherish forever.</p>
+      <div class="test-author">
+        <img class="test-avatar" src="https://heavenexplorer.in/siteimg/defaultprofpic.png" alt="Krishna">
+        <div><div class="test-name">Krishna</div><div class="test-place">Chennai, Tamil Nadu</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YOUTUBE VIDEOS -->
+<section class="videos" id="videos">
+  <div class="section-label">YouTube</div>
+  <h2 class="section-title fade-up">WATCH THE <span>ADVENTURE</span></h2>
+  <p class="section-sub fade-up">381K+ subscribers. Join the Heaven Explorer community — one video at a time.</p>
+  <div class="video-grid" style="margin-top:3rem">
+    <!-- Click-to-play thumbnails -->
+    <div class="vid-thumb-click fade-up" onclick="openModal('uLSGEjFijsI')">
+      <img src="https://img.youtube.com/vi/uLSGEjFijsI/maxresdefault.jpg" alt="Heaven Explorer Video 1" onerror="this.src='https://img.youtube.com/vi/uLSGEjFijsI/hqdefault.jpg'">
+      <div class="vid-play-overlay">
+        <div class="vid-play-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0d08"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="vid-bottom-bar">Western Ghats Trek — Full Vlog</div>
+    </div>
+    <div class="vid-thumb-click fade-up" style="transition-delay:.1s" onclick="openModal('gKv-8VKNT04')">
+      <img src="https://img.youtube.com/vi/gKv-8VKNT04/maxresdefault.jpg" alt="Heaven Explorer Video 2" onerror="this.src='https://img.youtube.com/vi/gKv-8VKNT04/hqdefault.jpg'">
+      <div class="vid-play-overlay">
+        <div class="vid-play-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0d08"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="vid-bottom-bar">Kodaikanal Camping Adventure</div>
+    </div>
+    <div class="vid-thumb-click fade-up" style="transition-delay:.15s" onclick="openModal('D_X4s8b959g')">
+      <img src="https://img.youtube.com/vi/D_X4s8b959g/maxresdefault.jpg" alt="Heaven Explorer Video 3" onerror="this.src='https://img.youtube.com/vi/D_X4s8b959g/hqdefault.jpg'">
+      <div class="vid-play-overlay">
+        <div class="vid-play-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0d08"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="vid-bottom-bar">Vagamon Pine Forest Sunrise</div>
+    </div>
+    <div class="vid-thumb-click fade-up" style="transition-delay:.2s" onclick="openModal('gzciSzOVSKM')">
+      <img src="https://img.youtube.com/vi/gzciSzOVSKM/maxresdefault.jpg" alt="Heaven Explorer Video 4" onerror="this.src='https://img.youtube.com/vi/gzciSzOVSKM/hqdefault.jpg'">
+      <div class="vid-play-overlay">
+        <div class="vid-play-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0d08"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="vid-bottom-bar">Himalayan Base Camp Special</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2.5rem">
+    <a href="https://www.youtube.com/heavenexplorer?sub_confirmation=1" class="btn-ghost" target="_blank" style="display:inline-block">Subscribe on YouTube</a>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<div class="partners">
+  <div class="partners-label">Trusted Partners</div>
+  <div class="partners-logos">
+    <img class="partner-img" src="https://heavenexplorer.in/siteimg/decathlon.png" alt="Decathlon">
+    <img class="partner-img" src="https://heavenexplorer.in/siteimg/movosq.png" alt="Movosq">
+    <img class="partner-img" src="https://heavenexplorer.in/siteimg/vgp.png" alt="VGP">
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <h2>READY TO EXPLORE<br>YOUR HEAVEN?</h2>
+  <p>Limited spots per trek. Book early to avoid missing out on the adventure of a lifetime.</p>
+  <a href="#contact" class="btn-gold-outline">Reserve Your Spot</a>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-label">Contact Us</div>
+  <h2 class="section-title fade-up">LET'S PLAN YOUR <span>ADVENTURE</span></h2>
+  <div class="contact-grid">
+    <div class="contact-info fade-left">
+      <div class="contact-item">
+        <div class="contact-ico"><img src="https://heavenexplorer.in/siteimg/placeholder.png" alt="" style="width:18px;height:18px;object-fit:contain;opacity:.7" onerror="this.style.display='none'"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+        <div class="contact-detail"><h4>Address</h4><p>5, 1, Ayirankatha Amman Nagar, Oragadam,<br>Chennai, Tamil Nadu — 600053</p></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-ico"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="contact-detail"><h4>Phone</h4><p><a href="tel:+919499997272">+91 9499 99 7272</a>&nbsp;&nbsp;<a href="tel:+917904789778">+91 7904 78 9778</a></p></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-ico"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="contact-detail"><h4>Email</h4><p><a href="mailto:heavenexplorerenquiry@gmail.com">heavenexplorerenquiry@gmail.com</a></p></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-ico"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#83bf2c" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+        <div class="contact-detail"><h4>Instagram</h4><p><a href="https://www.instagram.com/heavenexplorer/" target="_blank">@heavenexplorer</a></p></div>
+      </div>
+    </div>
+    <div class="contact-form fade-up">
+      <div class="form-row">
+        <div class="form-field"><input type="text" placeholder="Your Name"></div>
+        <div class="form-field"><input type="email" placeholder="Email Address"></div>
+      </div>
+      <div class="form-field"><input type="text" placeholder="Phone Number"></div>
+      <div class="form-field">
+        <select>
+          <option value="">Select Destination</option>
+          <option>Poombarai — Kodaikanal</option>
+          <option>Yelagiri — Tirupattur</option>
+          <option>Kanthaloor — Idukki, Kerala</option>
+          <option>Vagamon — Kottayam, Kerala</option>
+          <option>Adventure Combo @ Uthandi</option>
+          <option>Adventure Combo @ Koovathur</option>
+        </select>
+      </div>
+      <div class="form-field"><textarea placeholder="Any special requests, group size, or preferred dates..."></textarea></div>
+      <button onclick="alert('Thanks for reaching out! The Heaven Explorer team will contact you within 24 hours.')" class="btn-gold" style="border:none;cursor:pointer;width:100%;justify-content:center;font-size:.9rem">
+        Send Message
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+      <div class="form-links">
+        <a href="https://heavenexplorer.in/termsandcondition.html" target="_blank">Terms & Conditions</a>
+        <a href="https://heavenexplorer.in/cancelationpolicy.html" target="_blank">Cancellation Policy</a>
+        <a href="https://heavenexplorer.in/paymentterms.html" target="_blank">Payment Terms</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="foot-logo">
+    <img src="https://heavenexplorer.in/siteimg/heaven.png" alt="Heaven Explorer" onerror="this.style.display='none'">
+    <span class="foot-logo-text">Heaven<span>Explorer</span></span>
+  </a>
+  <div class="foot-copy">© 2024 Heaven Explorers. All rights reserved. Developed with ♥ by <a href="https://iwoodtechnologies.com/" target="_blank">Iwood Technologies</a></div>
+  <div class="foot-socials">
+    <a class="social-btn" href="https://www.instagram.com/heavenexplorer/" target="_blank" title="Instagram">
+      <img src="https://heavenexplorer.in/siteimg/instagramcolor.png" alt="Instagram">
+    </a>
+    <a class="social-btn" href="https://www.youtube.com/heavenexplorer?sub_confirmation=1" target="_blank" title="YouTube">
+      <img src="https://heavenexplorer.in/siteimg/youtubecolor.png" alt="YouTube">
+    </a>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
+document.querySelectorAll('a,button,.dest-card,.adv-tab,.adv-detail-card,.vid-thumb-click,.gallery-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='16px';cursor.style.height='16px';ring.style.width='50px';ring.style.height='50px'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px'});
+});
+
+// NAV SCROLL
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
+
+// SCROLL ANIMATIONS
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
+document.querySelectorAll('.fade-up,.fade-left').forEach(el=>obs.observe(el));
+
+// VIDEO MODAL
+function openModal(id){
+  document.getElementById('modalFrame').src='https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0';
+  document.getElementById('vidModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('vidModal').classList.remove('open');
+  document.getElementById('modalFrame').src='';
+  document.body.style.overflow='';
+}
+document.getElementById('vidModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+// ADVENTURE TABS
+const advData={
+  bike:{
+    svg:`<svg width="310" height="270" viewBox="0 0 310 270" xmlns="http://www.w3.org/2000/svg"><path d="M0 195 L50 118 L100 165 L155 78 L210 148 L268 100 L310 128 L310 270 L0 270Z" fill="rgba(200,169,81,.04)"/><path d="M155 78 L190 128 L120 128Z" fill="rgba(200,169,81,.09)"/><path d="M0 235 Q155 220 310 230" stroke="#191f14" stroke-width="18" fill="none"/><path d="M0 235 Q155 220 310 230" stroke="#1c2418" stroke-width="14" fill="none"/><path d="M35 233 L80 230 M120 228 L165 226 M205 226 L250 228" stroke="rgba(200,169,81,.22)" stroke-width="2" stroke-dasharray="28,18"/><g transform="translate(155,212)"><circle cx="-56" cy="14" r="25" fill="none" stroke="#252d20" stroke-width="6"/><circle cx="-56" cy="14" r="16" fill="none" stroke="#1c2418" stroke-width="3"/><circle cx="-56" cy="14" r="5" fill="#83bf2c"/><line x1="-56" y1="-2" x2="-56" y2="30" stroke="#2a3222" stroke-width="1.5"/><line x1="-42" y1="4" x2="-70" y2="24" stroke="#2a3222" stroke-width="1.5"/><line x1="-70" y1="4" x2="-42" y2="24" stroke="#2a3222" stroke-width="1.5"/><circle cx="56" cy="14" r="25" fill="none" stroke="#252d20" stroke-width="6"/><circle cx="56" cy="14" r="16" fill="none" stroke="#1c2418" stroke-width="3"/><circle cx="56" cy="14" r="5" fill="#83bf2c"/><line x1="56" y1="-2" x2="56" y2="30" stroke="#2a3222" stroke-width="1.5"/><line x1="42" y1="4" x2="70" y2="24" stroke="#2a3222" stroke-width="1.5"/><line x1="70" y1="4" x2="42" y2="24" stroke="#2a3222" stroke-width="1.5"/><path d="M-8,6 L-22,-8 L10,-22 L40,-18 L46,-5 L34,6Z" fill="#191f14" stroke="#252d20" stroke-width="1.5"/><path d="M-10,-10 L12,-24 L30,-22 L36,-10 L10,-7Z" fill="#83bf2c"/><circle cx="16" cy="-36" r="8" fill="#0a0d08"/><path d="M-5,-20 Q6,-38 16,-34 Q22,-26 16,-20 L-5,-20Z" fill="#0a0d08"/><ellipse cx="50" cy="-6" rx="5" ry="4" fill="#83bf2c" opacity=".75"/><rect x="-74" y="-2" width="15" height="13" rx="1" fill="#191f14" stroke="#252d20" stroke-width="1"/><path d="M-10,5 Q-22,15 -46,14" stroke="#2a3222" stroke-width="4" fill="none" stroke-linecap="round"/></g><text x="155" y="262" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,169,81,.45)" letter-spacing="3" font-weight="600">ADVENTURE TOURING</text></svg>`,
+    cards:[{t:'Mountain Bike Trails',d:'Winding ghats roads with expert guidance. Routes through Kodaikanal, Munnar passes, and valley descents.'},{t:'Sunrise Rides',d:'Pre-dawn starts to catch golden hour on mountain peaks. Unforgettable vistas as the mist lifts.'},{t:'Group Ride Events',d:'Monthly community rides with 50–200 riders. Safety briefings, support vehicles, camp at destination.'}]
+  },
+  trek:{
+    svg:`<svg width="310" height="270" viewBox="0 0 310 270" xmlns="http://www.w3.org/2000/svg"><path d="M0 200 L55 112 L110 158 L165 68 L220 140 L280 98 L310 115 L310 270 L0 270Z" fill="rgba(200,169,81,.04)"/><path d="M165 68 L202 122 L128 122Z" fill="rgba(200,169,81,.1)"/><path d="M0 232 Q155 217 310 226" stroke="#191f14" stroke-width="14" fill="none"/><path d="M50 230 L90 228 M140 225 L180 224 M228 225 L268 227" stroke="rgba(200,169,81,.2)" stroke-width="2" stroke-dasharray="20,14"/><g transform="translate(155,216)"><circle cx="0" cy="-24" r="9" fill="#0a0d08"/><path d="M0,-15 Q-2,6 0,18 Q3,-3 6,18" stroke="#0a0d08" stroke-width="6" fill="none" stroke-linecap="round"/><line x1="0" y1="-5" x2="-15" y2="5" stroke="#83bf2c" stroke-width="5" stroke-linecap="round"/><line x1="0" y1="-5" x2="15" y2="1" stroke="#0a0d08" stroke-width="5" stroke-linecap="round"/><line x1="15" y1="1" x2="21" y2="14" stroke="#0a0d08" stroke-width="3.5" stroke-linecap="round"/><line x1="-4" y1="18" x2="-9" y2="30" stroke="#0a0d08" stroke-width="4" stroke-linecap="round"/><line x1="4" y1="18" x2="9" y2="30" stroke="#0a0d08" stroke-width="4" stroke-linecap="round"/></g><g fill="#0a0d08" opacity=".55"><polygon points="30,232 43,205 56,232"/><polygon points="238,230 252,202 266,230"/><polygon points="278,232 293,204 308,232"/></g><text x="155" y="264" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,169,81,.45)" letter-spacing="3" font-weight="600">MOUNTAIN TREKKING</text></svg>`,
+    cards:[{t:'Western Ghats Treks',d:'Multi-day hikes through the Nilgiris, Anamalais, and Palani Hills with overnight camps at scenic points.'},{t:'Waterfall Trails',d:'Discover hidden waterfalls on guided trails — Kumbakarai, Pykara, and secret spots only locals know.'},{t:'Night Treks',d:'Full moon and starlight treks with experienced guides. Experience the mountains in a completely different light.'}]
+  },
+  camp:{
+    svg:`<svg width="310" height="270" viewBox="0 0 310 270" xmlns="http://www.w3.org/2000/svg"><path d="M0 210 L50 142 L100 177 L155 102 L210 157 L268 117 L310 137 L310 270 L0 270Z" fill="rgba(200,169,81,.04)"/><path d="M155 102 L188 150 L122 150Z" fill="rgba(200,169,81,.09)"/><path d="M0 250 Q155 235 310 244" stroke="#191f14" stroke-width="14" fill="none"/><g transform="translate(100,248)"><polygon points="-26,13 0,-17 26,13" fill="#83bf2c" opacity=".82"/><polygon points="0,13 26,-17 52,13" fill="#9e7e2e" opacity=".72"/><path d="M-4,9 Q-2,-3 0,-7 Q2,-2 4,9Z" fill="#e2c97e" opacity=".9"/><ellipse cx="13" cy="13" rx="26" ry="4" fill="rgba(0,0,0,.3)"/></g><g transform="translate(218,248)"><polygon points="-20,11 0,-13 20,11" fill="#2d5a27" opacity=".78"/><polygon points="0,11 20,-13 40,11" fill="#1a3a16" opacity=".72"/></g><ellipse cx="148" cy="262" rx="52" ry="14" fill="rgba(200,169,81,.1)"/><g transform="translate(145,258)"><path d="M-7,3 Q-5,-7 0,-11 Q4,-5 7,3Z" fill="#83bf2c" opacity=".88"/><path d="M-4,3 Q-2,-5 0,-7 Q3,-3 4,3Z" fill="#e2c97e" opacity=".75"/></g><g fill="#0a0d08" opacity=".52"><polygon points="38,250 51,222 64,250"/><polygon points="258,248 272,219 286,248"/></g><g fill="#fff" opacity=".4"><circle cx="50" cy="38" r="1"/><circle cx="180" cy="18" r="1.5"/><circle cx="276" cy="42" r="1"/></g><text x="155" y="268" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,169,81,.45)" letter-spacing="3" font-weight="600">WILDERNESS CAMPING</text></svg>`,
+    cards:[{t:'Starlight Camps',d:'Away from city lights — our remote sites offer some of the best stargazing in Tamil Nadu and Kerala.'},{t:'Gourmet Camp Kitchen',d:'Fresh meals cooked over fire. Local flavors, forest-to-plate cooking, chai at golden hour.'},{t:'Bonfire Nights',d:'Stories, music, and connections forged around the fire. The campfire is where the real adventure begins.'}]
+  },
+  offroad:{
+    svg:`<svg width="310" height="270" viewBox="0 0 310 270" xmlns="http://www.w3.org/2000/svg"><path d="M0 200 L60 132 L120 172 L178 92 L238 152 L298 107 L310 117 L310 270 L0 270Z" fill="rgba(200,169,81,.04)"/><path d="M178 92 L213 140 L143 140Z" fill="rgba(200,169,81,.09)"/><path d="M0 242 Q60 222 120 237 Q178 252 238 232 Q278 220 310 230" stroke="#191f14" stroke-width="22" fill="none"/><path d="M0 242 Q60 222 120 237 Q178 252 238 232 Q278 220 310 230" stroke="#1c2418" stroke-width="17" fill="none"/><g transform="translate(155,224)"><rect x="-48" y="-27" width="96" height="29" rx="2" fill="#191f14"/><rect x="-40" y="-42" width="63" height="17" rx="3" fill="#141a10"/><rect x="-33" y="-38" width="23" height="11" rx="1" fill="#0d1209" opacity=".8"/><rect x="8" y="-38" width="21" height="11" rx="1" fill="#0d1209" opacity=".8"/><rect x="-48" y="-6" width="96" height="9" fill="#0f140d"/><circle cx="-30" cy="6" r="13" fill="#0a0a08" stroke="#252d20" stroke-width="3"/><circle cx="-30" cy="6" r="6" fill="#191f14"/><circle cx="30" cy="6" r="13" fill="#0a0a08" stroke="#252d20" stroke-width="3"/><circle cx="30" cy="6" r="6" fill="#191f14"/><rect x="-17" y="-42" width="34" height="4" rx="1" fill="#83bf2c" opacity=".3"/><circle cx="-42" cy="-14" r="3" fill="#83bf2c" opacity=".7"/><circle cx="42" cy="-14" r="3" fill="rgba(255,255,200,.55)"/></g><text x="155" y="268" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,169,81,.45)" letter-spacing="3" font-weight="600">OFF-ROAD 4X4</text></svg>`,
+    cards:[{t:'4×4 Jeep Safaris',d:'Rugged terrain, river crossings, and highland tracks through the Ghats — no tarmac, pure adrenaline.'},{t:'Dirt Track Riding',d:'Purpose-built off-road trails near Uthandi and Koovathur with ATV, quad bikes, and dirt bikes.'},{t:'Adventure Combos',d:'Rope courses, zip lines, kayaking, and off-road driving in one action-packed package.'}]
+  }
+};
+function switchAdv(btn,mode){
+  document.querySelectorAll('.adv-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const d=advData[mode];
+  document.getElementById('advSvgBox').innerHTML=d.svg;
+  document.getElementById('advDetails').innerHTML=d.cards.map((c,i)=>`<div class="adv-detail-card${i===0?' active':''}"><div class="adv-detail-title">${c.t}</div><div class="adv-detail-desc">${c.d}</div></div>`).join('');
+}
+</script>
+</body>
+</html>
